@@ -1,35 +1,44 @@
 .xAxis {
     font: 20px sans-serif;
+    pointer-events: none;
 }
 
 .yAxis {
      font: 20px sans-serif;
+    pointer-events: none;
  }
 
 .xLabel {
     font: 27px sans-serif;
+    pointer-events: none;
 }
 
 .yLabel {
     font: 27px sans-serif;
+    pointer-events: none;
 }
 
 .buttonLabel{
+    font: 16px sans-serif;
     pointer-events: none;
 }
 
 .legendCircle10{
     transform: translate(0px, -55px);
     font: 25px sans-serif;
+    pointer-events: none;
 }
 
 .legendCircle20{
     transform: translate(0px, -20px);
     font: 25px sans-serif;
+    pointer-events: none;
 }
 .legendCircle30{
     font: 25px sans-serif;
+    pointer-events: none;
 }
 .legendCircle40{
     font: 25px sans-serif;
+    pointer-events: none;
 }
