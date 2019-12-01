@@ -7,18 +7,20 @@ window.onload = function(){
 };
 
 var _data;
-var WIDTH = 1650;
+var WIDTH = 1800;
 var HEIGHT = 2300;
 var flag = true;
-var rightXPad = 150;
+var rightXPad = 295;
 var yPad = 101;
-var xPos = 1350;
+var xPos = 1510;
 var yPos = 2000;
-var teamId1 = ["atl", "bos", "bkn", "cha", "chi", "cle", "dal", "den", "det", "gsw", "hou", "ind", "lac",
-    "lal", "mem", "mia", "mil", "min", "nop", "nyk", "okc", "orl", "phi", "phx", "por", "sac", "sas", "tor", "uta", "was", " "].map (v => v.toUpperCase());
+var teamId1 = ["Atlanta Hawks", "Boston Celtics", "Brooklyn Nets", "Charlotte Hornets", "Chicago Bulls", "Cleveland Cavaliers", "Dallas Mavericks", "Denver Nuggets",
+    "Detroit Pistons", "Golden State Warriors", "Houston Rockets", "Indiana Pacers", "Los Angeles Clippers", "Los Angeles Lakers", "Memphis Grizzlies", "Miami Heat",
+    "Milwaukee Bucks", "Minnesota Timberwolves", "New Orleans Pelicans", "New York Knicks", "Oklahoma City", "Orlando Magic", "Philadelphia 76ers",
+    "Phoenix Suns", "Portland Trail Blazers", "Sacramento Kings", "San Antonio Spurs", "Toronto Raptors", "Utah Jazz", "Washington Wizards", " "];
 
 function setUp() {
-    d3.csv("nba-stats.csv").then(function (data) {
+    d3.csv("nbaStats.csv").then(function (data) {
         _data = data;
         bubbleChart();
     });
@@ -69,19 +71,19 @@ function bubbleChart(){
     svgContainer.append("text")
         .attr("class", "xLabel")
         .text("Shooting Percentage (%)")
-        .attr("x", 650)
+        .attr("x", 750)
         .attr("y", 2275);
     //title label
     svgContainer.append("text")
         .attr("class", "xLabel")
         .text("Title Goes Here")
-        .attr("x", 650)
+        .attr("x", 750)
         .attr("y", 50);
 
     svgContainer.append("text")
         .attr("class", "yLabel")
         .text("NBA Teams")
-        .attr("x", -1200)
+        .attr("x", -1100)
         .attr("y", 50)
         .attr("transform", "rotate(-90)")
         .style("text-anchor", "middle")
@@ -96,7 +98,7 @@ function bubbleChart(){
         .enter()
         .append("circle")
         .attr("id", function (d) {
-            return d.Team;
+            return (d.Team).replace(/\s+/g,'');
         })
         .attr("r", function (d) {
             return d.AveragePoints;
@@ -108,8 +110,10 @@ function bubbleChart(){
             return yScale(d.Team) + yPad;
         })
         .style("fill", function (d) {
-            return "url(#" + d.Team.toLowerCase() + ")"
-            //return colorScale(d.Team)
+            return "url(#" + (d.Team).replace(/\s+/g, '') + ")"
+            //var string = (d.Team).replace(/\s+/g, '');
+            //console.log(string)
+            //return colorScale(string)
         })
         .attr("opacity", 0.7)
         .on("click", function (d) {
@@ -134,12 +138,18 @@ function bubbleChart(){
         .attr("id", "buttonTwo")
         .attr("rx", 11)
         .attr("ry", 11)
-        .attr("x", xPos + 75)
+        .attr("x", xPos + 100)
         .attr("y", yPos - 50)
         .attr("height", 50)
         .attr("width", 70)
         .attr("opacity", 0.5)
         .style("fill", "#73a9de")
+        .on("mouseover", function () {
+            d3.select(this).style("stroke-width", 4).style("stroke", "black")
+        })
+        .on("mouseout", function () {
+            d3.select(this).style("stroke", "none");
+        })
         .on("click", function (d) {
             d3.select(this).attr("opacity", 1)                  //change selection
             d3.select("#buttonOne").attr("opacity", 0.5)        //and highlight the button so we know its selected
@@ -173,7 +183,7 @@ function bubbleChart(){
         })
     svgContainer.append("text")
         .attr("class", "buttonLabel")
-        .attr("x", xPos + 100)
+        .attr("x", xPos + 125)
         .attr("y", yPos - 20)
         .text("FT")
 
@@ -181,12 +191,18 @@ function bubbleChart(){
         .attr("id", "buttonOne")
         .attr("rx", 11)
         .attr("ry", 11)
-        .attr("x", xPos - 25)
+        .attr("x", xPos)
         .attr("y", yPos - 50)
         .attr("height", 50)
         .attr("width", 70)
         .attr("opacity", 1)
         .style("fill", "#73a9de")
+        .on("mouseover", function () {
+            d3.select(this).style("stroke-width", 4).style("stroke", "black")
+        })
+        .on("mouseout", function () {
+            d3.select(this).style("stroke", "none");
+        })
         .on("click", function (d) {
             d3.select(this).attr("opacity", 1)                  //change selection
             d3.select("#buttonTwo").attr("opacity", 0.5)        //and highlight the button so we know its selected
@@ -216,12 +232,14 @@ function bubbleChart(){
         })
     svgContainer.append("text")
         .attr("class", "buttonLabel")
-        .attr("x", xPos - 5)
+        .attr("x", xPos + 20)
         .attr("y", yPos - 20)
         .text("3PT")
 
 
-    sortConf(svgContainer);
+    sortConf(svgContainer);         //function that will add buttons so we can sort based off of west or east conf
+    createLegend(svgContainer);        //function that makes the average points legend
+
 
     var tooltip = svgContainer.append("g")
         .attr("class", "tooltip")
@@ -234,18 +252,21 @@ function bubbleChart(){
         .style("opacity", 1)
         .style("font-size", "1.45em");
 
-    createLegend(svgContainer);
+
 }
 
+//function that create defs and patterns for our images
 function createImage(svgContainer) {
 
-    var teamId = ["dal", "gsw", "atl", "bos", "bkn", "cha", "chi", "cle", "den", "hou", "det", "ind", "lac",
-        "lal", "mem", "mia", "mil", "min", "nop", "nyk", "okc", "phi", "por", "phx", "orl", "sac", "sas", "tor", "uta", "was"];
+        //array containing our image paths
+    var teamId = ["atl", "bos", "bkn", "cha", "chi", "cle", "dal", "den", "det", "gsw", "hou", "ind", "lac",
+        "lal", "mem", "mia", "mil", "min", "nop", "nyk", "okc", "orl", "phi", "phx", "por", "sac", "sas", "tor", "uta", "was"];
+
     //create a def for each image we have
-    for(i = 0; i < teamId.length; i++){
+    for(i = 0; i < teamId1.length - 1; i++){
         var defs = svgContainer.append("defs")
         defs.append("pattern")
-            .attr("id", teamId[i])
+            .attr("id", (teamId1[i]).replace(/\s+/g, ''))
             .attr("height", "100%")
             .attr("width", "100%")
             .attr("patternContentUnits", "objectBoundingBox")
@@ -254,7 +275,7 @@ function createImage(svgContainer) {
             .attr("width", "1")
             .attr("preserveAspectRatio", "none")
             .attr("xmlns:xlink", "http://www.w3.org/1999/xLink")
-            .attr("xlink:href", "Pic/" + teamId[i] + ".png");
+            .attr("xlink:href", "Pic/" +  teamId[i] + ".png");
     }
 }
 //need to refacor this function later
@@ -262,11 +283,11 @@ function createImage(svgContainer) {
 //on each button click it will sort teams based on All, East, West teams
 function sortConf(svgContainer){
 
-    var eastTeams = ["ATL", "BOS", "BKN", "CHA", "CHI", "CLE", "DET", "IND", "MIA", "MIL", "NYK",
-        "ORL", "PHI", "TOR", "WAS", " "];
+    var eastTeams = ["Atlanta Hawks", "Boston Celtics", "Brooklyn Nets", "Charlotte Hornets", "Chicago Bulls", "Cleveland Cavaliers", "Detroit Pistons",
+        "Indiana Pacers", "Miami Heat", "Milwaukee Bucks", "New York Knicks", "Orlando Magic", "Philadelphia 76ers", "Toronto Raptors", "Washington Wizards", " "];
 
-    var westTeams = ["DAL", "DEN", "GSW", "HOU", "LAC", "LAL", "MEM", "MIN", "NOP", "OKC", "PHX",
-        "POR", "SAC", "SAS", "UTA", " "];
+    var westTeams = ["Dallas Mavericks", "Denver Nuggets", "Golden State Warriors", "Houston Rockets", "Los Angeles Clippers", "Los Angeles Lakers", "Memphis Grizzlies",
+        "Minnesota Timberwolves", "New Orleans Pelicans", "Oklahoma City", "Phoenix Suns", "Portland Trail Blazers", "Sacramento Kings", "San Antonio Spurs", "Utah Jazz", " "];
 
     //refactor this later
     var yScaleEast = d3.scalePoint()
@@ -297,12 +318,18 @@ function sortConf(svgContainer){
         .attr("id", "buttonThree")
         .attr("rx", 11)
         .attr("ry", 11)
-        .attr("x", xPos + 175)
+        .attr("x", xPos + 200)
         .attr("y", yPos + 20)
         .attr("height", 50)
         .attr("width", 70)
         .attr("opacity", 0.5)
         .style("fill", "#73a9de")
+        .on("mouseover", function () {
+            d3.select(this).style("stroke-width", 4).style("stroke", "black")
+        })
+        .on("mouseout", function () {
+            d3.select(this).style("stroke", "none");
+        })
         .on("click", function (d) {
             d3.select(this).attr("opacity", 1)                  //change selection;
             d3.select("#buttonFour").attr("opacity", 0.5)
@@ -343,7 +370,7 @@ function sortConf(svgContainer){
         })
     svgContainer.append("text")                                                                    //text that labels our buttons
         .attr("class", "buttonLabel")
-        .attr("x", xPos + 195)
+        .attr("x", xPos + 220)
         .attr("y", yPos + 50)
         .text("East")
 
@@ -354,12 +381,18 @@ function sortConf(svgContainer){
         .attr("id", "buttonFour")
         .attr("rx", 11)
         .attr("ry", 11)
-        .attr("x", xPos + 75)
+        .attr("x", xPos + 100)
         .attr("y", yPos + 20)
         .attr("height", 50)
         .attr("width", 70)
         .attr("opacity", 0.5)
         .style("fill", "#73a9de")
+        .on("mouseover", function () {
+            d3.select(this).style("stroke-width", 4).style("stroke", "black")
+        })
+        .on("mouseout", function () {
+            d3.select(this).style("stroke", "none");
+        })
         .on("click", function (d) {
             d3.select(this).attr("opacity", 1)                  //change selection;
             d3.select("#buttonThree").attr("opacity", 0.5)
@@ -400,7 +433,7 @@ function sortConf(svgContainer){
         })
     svgContainer.append("text")                                                                    //text that labels our buttons
         .attr("class", "buttonLabel")
-        .attr("x", xPos + 93)
+        .attr("x", xPos + 118)
         .attr("y", yPos + 50)
         .text("West")
 
@@ -411,12 +444,18 @@ function sortConf(svgContainer){
         .attr("id", "buttonFive")
         .attr("rx", 11)
         .attr("ry", 11)
-        .attr("x", xPos - 25)
+        .attr("x", xPos)
         .attr("y", yPos + 20)
         .attr("height", 50)
         .attr("width", 70)
         .attr("opacity", 1)
         .style("fill", "#73a9de")
+        .on("mouseover", function () {
+            d3.select(this).style("stroke-width", 4).style("stroke", "black")
+        })
+        .on("mouseout", function () {
+            d3.select(this).style("stroke", "none");
+        })
         .on("click", function (d) {
             d3.select(this).attr("opacity", 1)                  //change selection;
             d3.select("#buttonThree").attr("opacity", 0.5)      //change highlight color of our buttons
@@ -452,16 +491,17 @@ function sortConf(svgContainer){
         })
     svgContainer.append("text")                                                                    //text that labels our buttons
         .attr("class", "buttonLabel")
-        .attr("x", xPos - 5)
+        .attr("x", xPos + 20)
         .attr("y", yPos + 50)
         .text("All");
 }
 
 
+//function that will create our legend
+//size is based off of average salary
 function createLegend(svgContainer) {
-
     var averagePoints = [40,30,20,10]
-    y = 1500
+    y = 800
     svgContainer.selectAll("a")
         .data(averagePoints)
         .enter()
@@ -472,13 +512,13 @@ function createLegend(svgContainer) {
         .attr("r", function (d) {
             return d;
         })
-        .attr("cx", 1350)
+        .attr("cx", xPos + 50)
         .attr("cy", function (d) {
             return y +=75;
         })
         .attr("opacity", 0.6)
         .style("fill", "#44c4eb");
-    y = 1500
+    y = 800
     svgContainer.selectAll("legendText")
         .data(averagePoints)
         .enter()
@@ -486,7 +526,7 @@ function createLegend(svgContainer) {
         .attr("class", function (d) {
             return "legendCircle" + d.toString();
         })
-        .attr("x", 1400)
+        .attr("x", xPos + 100)
         .attr("y", function (d) {
             return y+=77;
         })
