@@ -5,7 +5,7 @@ CPSC 583
 window.onload = function(){
     setUp();
 };
-
+//define global variables
 var _data;
 var WIDTH = 1800;
 var HEIGHT = 2300;
@@ -13,11 +13,26 @@ var flag = true;
 var rightXPad = 295;
 var yPad = 101;
 var xPos = 1510;
-var yPos = 2000;
+var yPos = 2060;
+var tempList = [];
+//image.png
+var teamId = ["atl", "bos", "bkn", "cha", "chi", "cle", "dal", "den", "det", "gsw", "hou", "ind", "lac",
+    "lal", "mem", "mia", "mil", "min", "nop", "nyk", "okc", "orl", "phi", "phx", "por", "sac", "sas", "tor", "uta", "was"];
+
 var teamId1 = ["Atlanta Hawks", "Boston Celtics", "Brooklyn Nets", "Charlotte Hornets", "Chicago Bulls", "Cleveland Cavaliers", "Dallas Mavericks", "Denver Nuggets",
     "Detroit Pistons", "Golden State Warriors", "Houston Rockets", "Indiana Pacers", "Los Angeles Clippers", "Los Angeles Lakers", "Memphis Grizzlies", "Miami Heat",
     "Milwaukee Bucks", "Minnesota Timberwolves", "New Orleans Pelicans", "New York Knicks", "Oklahoma City", "Orlando Magic", "Philadelphia 76ers",
     "Phoenix Suns", "Portland Trail Blazers", "Sacramento Kings", "San Antonio Spurs", "Toronto Raptors", "Utah Jazz", "Washington Wizards", " "];
+
+var yScale = d3.scalePoint()
+    .domain(teamId1)
+    .range([0, 2100])
+
+var xScale = d3.scaleLinear()
+    .domain([0,55])
+    .range([0, 1100]);
+
+var filter = [];
 
 function setUp() {
     d3.csv("nbaStats.csv").then(function (data) {
@@ -42,16 +57,10 @@ function bubbleChart(){
 
 // setup our x scale
     //domain is from 0% to 55%
-    var xScale = d3.scaleLinear()
-        .domain([0,55])
-        .range([0, 1100]);
     var xAxis = d3.axisBottom(xScale);
 
 // setup our y sccale
     //domain is all the nba teams
-    var yScale = d3.scalePoint()
-        .domain(teamId1)
-        .range([0, 2100])
     var yAxis = d3.axisLeft(yScale);
 
 
@@ -116,9 +125,7 @@ function bubbleChart(){
             //return colorScale(string)
         })
         .attr("opacity", 0.7)
-        .on("click", function (d) {
-            console.log(d)
-        })
+        .on("click", function (d) {})
         .on("mouseover", function (d) {
             tooltip.style("display", null)
         })
@@ -154,7 +161,6 @@ function bubbleChart(){
             d3.select(this).attr("opacity", 1)                  //change selection
             d3.select("#buttonOne").attr("opacity", 0.5)        //and highlight the button so we know its selected
             flag = false; //this flag will help us keep track of the data presented 3pt or ft
-            console.log(flag);
             var xScaleFT = d3.scaleLinear()
                 .domain([0,100])
                 .range([0, 1200]);
@@ -207,7 +213,6 @@ function bubbleChart(){
             d3.select(this).attr("opacity", 1)                  //change selection
             d3.select("#buttonTwo").attr("opacity", 0.5)        //and highlight the button so we know its selected
             flag = true;
-            console.log(flag)
             var xScale3PT = d3.scaleLinear()
                 .domain([0,55])
                 .range([0, 1100]);
@@ -239,7 +244,7 @@ function bubbleChart(){
 
     sortConf(svgContainer);         //function that will add buttons so we can sort based off of west or east conf
     createLegend(svgContainer);        //function that makes the average points legend
-
+    createRadioButtons(svgContainer);
 
     var tooltip = svgContainer.append("g")
         .attr("class", "tooltip")
@@ -259,8 +264,6 @@ function bubbleChart(){
 function createImage(svgContainer) {
 
         //array containing our image paths
-    var teamId = ["atl", "bos", "bkn", "cha", "chi", "cle", "dal", "den", "det", "gsw", "hou", "ind", "lac",
-        "lal", "mem", "mia", "mil", "min", "nop", "nyk", "okc", "orl", "phi", "phx", "por", "sac", "sas", "tor", "uta", "was"];
 
     //create a def for each image we have
     for(i = 0; i < teamId1.length - 1; i++){
@@ -334,7 +337,14 @@ function sortConf(svgContainer){
             d3.select(this).attr("opacity", 1)                  //change selection;
             d3.select("#buttonFour").attr("opacity", 0.5)
             d3.select("#buttonFive").attr("opacity", 0.5)
-            //FIRST remake the axis to fit the eastern teams
+
+            //here we make sure to append to filter all eastern teams so we can filter these out if users selects them
+            /*
+            for(var i = 0; i < eastTeams.length; i++){
+                filter.push(eastTeams[i])
+            }
+
+             */
             svgContainer.selectAll("circle")
                 .data(_data)
                 .transition()
@@ -352,14 +362,13 @@ function sortConf(svgContainer){
                         return yScaleEast(d.Team) + yPad;                                   //now scale the eastern conf team
                     }
                     if(westTeams.includes(d.Team)){                                             //hide all the western conf teams
-                        return -1000;
+                        return -4000;
                     }
                 });
 
             var parent = document.getElementById("vis")                                 //we remove the axis to update it
             var child = parent.getElementsByClassName("yAxis")[0];
             parent.removeChild(child);
-
             var newYAxis = d3.axisLeft(yScaleEast);                                             //here we append the new y axis
             svgContainer.append("g")
                 .attr("class", "yAxis")
@@ -501,7 +510,7 @@ function sortConf(svgContainer){
 //size is based off of average salary
 function createLegend(svgContainer) {
     var averagePoints = [40,30,20,10]
-    y = 800
+    y = 400
     svgContainer.selectAll("a")
         .data(averagePoints)
         .enter()
@@ -512,13 +521,13 @@ function createLegend(svgContainer) {
         .attr("r", function (d) {
             return d;
         })
-        .attr("cx", xPos + 50)
+        .attr("cx", xPos + 25)
         .attr("cy", function (d) {
             return y +=75;
         })
         .attr("opacity", 0.6)
         .style("fill", "#44c4eb");
-    y = 800
+    y = 400
     svgContainer.selectAll("legendText")
         .data(averagePoints)
         .enter()
@@ -526,11 +535,158 @@ function createLegend(svgContainer) {
         .attr("class", function (d) {
             return "legendCircle" + d.toString();
         })
-        .attr("x", xPos + 100)
+        .attr("x", xPos + 75)
         .attr("y", function (d) {
             return y+=77;
         })
         .text(function (d) {
-            return d + " Average Points"
+            return d + " Avg Points"
         })
+}
+
+function createRadioButtons(svgContainer) {
+    var leftStackButtons = ["Atlanta Hawks", "Charlotte Hornets", "Dallas Mavericks", "Golden State Warriors", "Los Angeles Clippers", "Miami Heat", "New Orleans Pelicans", "Orlando Magic",
+        "Portland Trail Blazers", "Toronto Raptors"];
+    var middleStackButtons = ["Brooklyn Nets", "Chicago Bulls", "Denver Nuggets", "Houston Rockets", "Los Angeles Lakers", "Milwaukee Bucks", "New York Knicks", "Philadelphia 76ers",
+        "Sacramento Kings", "Utah Jazz"];
+    var rightStackButtons = ["Boston Celtics", "Cleveland Cavaliers", "Detroit Pistons", "Indiana Pacers", "Memphis Grizzlies", "Minnesota Timberwolves", "Oklahoma City", "Phoenix Suns",
+        "San Antonio Spurs", "Washington Wizards"];
+    var temp = teamId1;
+    temp.pop();
+
+    //call function to draw our buttons
+    drawButtons(svgContainer, leftStackButtons, middleStackButtons, rightStackButtons);
+
+
+    //create a radio button to confirm selection of the filtered teams
+    svgContainer.append("rect")
+        .data(_data)
+        .attr("id", "buttonSix")
+        .attr("rx", 11)
+        .attr("ry", 11)
+        .attr("x", xPos)
+        .attr("y", 1880)
+        .attr("height", 50)
+        .attr("width", 70)
+        .attr("opacity", 1)
+        .style("fill", "#73a9de")
+        .on("mouseover", function () {
+            d3.select(this).style("stroke-width", 4).style("stroke", "black")
+        })
+        .on("mouseout", function () {
+            d3.select(this).style("stroke", "none");
+        })
+        .on("click", function (d) {
+            //temp variable to get rid of " " in teamId1 so we can compute the difference between temp and filtersole.log(temp)
+
+            //want to remove all duplicates just in case of user error
+            filter = [...new Set(filter)];
+            filter.sort();
+            filter.push("")
+
+            tempList = temp.filter(x => !filter.includes(x));
+
+            var calcAxisRange = (70 * filter.length)
+            var calcAxisMove = (70 * tempList.length)
+            //from those two list i will construct a new axis
+            var yScaleFilter = d3.scalePoint()
+                .domain(filter)
+                .range([0, calcAxisRange]);
+
+
+            //select all circles
+            svgContainer.selectAll("circle")
+                .data(_data)
+                .transition()
+                .duration(1300)
+                .attr("cx", function (d) {
+                    var xScaleFT = d3.scaleLinear()
+                        .domain([0,140])
+                        .range([0, 1200]);
+                    if(flag == true ) {
+                        return xScale(d.ThreePointPercentage) + rightXPad;                      //if the flag is set to true it means we are moving based on three point percentage
+                    }
+                    else{
+                        return xScaleFT(d.FreeThrowPercentage) + rightXPad;                     //else free throw percentage
+                    }
+                })
+                .attr("cy", function (d) {
+                    if(filter.includes(d.Team)){
+                        return yScaleFilter(d.Team) + (yPad + calcAxisMove - 70);                                  //now scale the eastern conf team
+                    }
+                    if(tempList.includes(d.Team)){                                             //hide all the western conf teams
+                        return -4000;
+                    }
+                });
+
+            var parent = document.getElementById("vis")                                 //we remove the axis to update it
+            var child = parent.getElementsByClassName("yAxis")[0];
+            parent.removeChild(child);
+            var newYAxis = d3.axisLeft(yScaleFilter);                                             //here we append the new y axis
+
+            svgContainer.append("g")
+                .attr("class", "yAxis")
+                .attr("id", "Team-Axis")
+                .attr("transform", "translate(" + rightXPad + "," + (calcAxisMove + 30) + ")")
+                .call(newYAxis);
+            filter.pop()    //remove the " " element so our y axis doesnt start on x axis
+
+
+
+        })
+    svgContainer.append("text")                                                                    //text that labels our buttons
+        .attr("class", "buttonLabel")
+        .attr("x", xPos + 15)
+        .attr("y", 1912)
+        .text("Select");
+
+
+
+
+}
+
+
+function  drawButtons(svgContainer, leftStackButtons, middleStackButtons, rightStackButtons) {
+
+    var listOfButtons = []
+    listOfButtons.push(leftStackButtons);
+    listOfButtons.push(middleStackButtons);
+    listOfButtons.push(rightStackButtons);
+    var buttonPad = 0;
+    var buttonPadX = 60;
+    for(var i = 0; i < listOfButtons.length; i++){
+        //console.log(listOfButtons[i])
+        svgContainer.selectAll(("chartOne" + i).toString())
+            .data(listOfButtons[i])
+            .enter()
+            .append("circle")
+            .attr("class", function (d) {
+                return d;
+            })
+            .attr("r", 30)
+            .attr("cx", xPos - 30 + buttonPadX)
+            .attr("cy", function () {
+                buttonPad+=68
+                return buttonPad + (yPos - 910)
+            })
+            .style("stroke", "rgba(255,128,0,0)")
+            .style("stroke-width", 5)
+            .style("fill", function(d, i) {
+                return "url(#" + (d).replace(/\s+/g, '') + ")";
+            } )
+            .on("mouseover", function () {
+                d3.select(this).style("stroke-width", 4).style("stroke", "black")
+            })
+            .on("mouseout", function () {
+                d3.select(this).style("stroke", "none");
+            })
+            .on("click", function (d) {
+                filter.push(d);
+                d3.select(this).style("opacity", 0.5)
+            });
+        buttonPad = 0; //reset var back to 0 to use for padding
+        buttonPadX+= 65;
+    }
+
+
 }
