@@ -7,11 +7,11 @@ window.onload = function(){
 };
 //define global variables
 var _data;
-var WIDTH = 1800;
+var WIDTH = 1850;
 var HEIGHT = 2300;
 var flag = true;
 var rightXPad = 295;
-var yPad = 101;
+var yPad = 100;
 var xPos = 1510;
 var yPos = 2060;
 var tempList = [];
@@ -85,7 +85,7 @@ function bubbleChart(){
     //title label
     svgContainer.append("text")
         .attr("class", "xLabel")
-        .text("Title Goes Here")
+        .text("NBA Teams and Their Shooting Percentages (3PT/FT)")
         .attr("x", 750)
         .attr("y", 50);
 
@@ -139,6 +139,20 @@ function bubbleChart(){
             tooltip.select("text").text(d.Player)
         });
 
+    //draw a border around our 3PT and FT buttons
+    svgContainer.append("g")
+        .append("rect")
+        .attr("rx", 10)
+        .attr("ry", 10)
+        .attr("x", xPos - 15)
+        .attr("y", yPos  - 20)
+        .attr("width", 300)
+        .attr("height", 150)
+        .style("opacity", 1)
+        .attr("stroke", "black")
+        .attr("stroke-width", "3px")
+        .attr("fill", "white");
+
 
     //Button for representing data as free throw percentage
     svgContainer.append("rect")
@@ -146,7 +160,7 @@ function bubbleChart(){
         .attr("rx", 11)
         .attr("ry", 11)
         .attr("x", xPos + 100)
-        .attr("y", yPos - 50)
+        .attr("y", yPos)
         .attr("height", 50)
         .attr("width", 70)
         .attr("opacity", 0.5)
@@ -190,7 +204,7 @@ function bubbleChart(){
     svgContainer.append("text")
         .attr("class", "buttonLabel")
         .attr("x", xPos + 125)
-        .attr("y", yPos - 20)
+        .attr("y", yPos + 30)
         .text("FT")
 
     svgContainer.append("rect")
@@ -198,7 +212,7 @@ function bubbleChart(){
         .attr("rx", 11)
         .attr("ry", 11)
         .attr("x", xPos)
-        .attr("y", yPos - 50)
+        .attr("y", yPos)
         .attr("height", 50)
         .attr("width", 70)
         .attr("opacity", 1)
@@ -238,13 +252,14 @@ function bubbleChart(){
     svgContainer.append("text")
         .attr("class", "buttonLabel")
         .attr("x", xPos + 20)
-        .attr("y", yPos - 20)
+        .attr("y", yPos + 30)
         .text("3PT")
 
-
+    createLegendBorder(svgContainer);
     sortConf(svgContainer);         //function that will add buttons so we can sort based off of west or east conf
     createLegend(svgContainer);        //function that makes the average points legend
     createRadioButtons(svgContainer);
+
 
     var tooltip = svgContainer.append("g")
         .attr("class", "tooltip")
@@ -322,7 +337,7 @@ function sortConf(svgContainer){
         .attr("rx", 11)
         .attr("ry", 11)
         .attr("x", xPos + 200)
-        .attr("y", yPos + 20)
+        .attr("y", yPos + 70)
         .attr("height", 50)
         .attr("width", 70)
         .attr("opacity", 0.5)
@@ -338,13 +353,11 @@ function sortConf(svgContainer){
             d3.select("#buttonFour").attr("opacity", 0.5)
             d3.select("#buttonFive").attr("opacity", 0.5)
 
-            //here we make sure to append to filter all eastern teams so we can filter these out if users selects them
-            /*
-            for(var i = 0; i < eastTeams.length; i++){
-                filter.push(eastTeams[i])
-            }
+            //clear the buttons if this is click
+            svgContainer.selectAll("#buttons")
+                .style("opacity", 1)
+            filter = [];
 
-             */
             svgContainer.selectAll("circle")
                 .data(_data)
                 .transition()
@@ -377,10 +390,11 @@ function sortConf(svgContainer){
                 .call(newYAxis);
 
         })
+
     svgContainer.append("text")                                                                    //text that labels our buttons
         .attr("class", "buttonLabel")
         .attr("x", xPos + 220)
-        .attr("y", yPos + 50)
+        .attr("y", yPos + 100)
         .text("East")
 
     //-----------------------------------------------------------
@@ -391,7 +405,7 @@ function sortConf(svgContainer){
         .attr("rx", 11)
         .attr("ry", 11)
         .attr("x", xPos + 100)
-        .attr("y", yPos + 20)
+        .attr("y", yPos + 70)
         .attr("height", 50)
         .attr("width", 70)
         .attr("opacity", 0.5)
@@ -406,7 +420,12 @@ function sortConf(svgContainer){
             d3.select(this).attr("opacity", 1)                  //change selection;
             d3.select("#buttonThree").attr("opacity", 0.5)
             d3.select("#buttonFive").attr("opacity", 0.5)
-            //FIRST remake the axis to fit the eastern teams
+
+            //clear the buttons if this is click
+            svgContainer.selectAll("#buttons")
+                .style("opacity", 1)
+            filter = [];
+
             svgContainer.selectAll("circle")
                 .data(_data)
                 .transition()
@@ -443,18 +462,18 @@ function sortConf(svgContainer){
     svgContainer.append("text")                                                                    //text that labels our buttons
         .attr("class", "buttonLabel")
         .attr("x", xPos + 118)
-        .attr("y", yPos + 50)
+        .attr("y", yPos + 100)
         .text("West")
 
     //-----------------------------------------------------------------------------
-    //HEre we wiill add an All button that shows all the teams
+    //Here we wiil add an All button that shows all the teams
     svgContainer.append("rect")
         .data(_data)
         .attr("id", "buttonFive")
         .attr("rx", 11)
         .attr("ry", 11)
         .attr("x", xPos)
-        .attr("y", yPos + 20)
+        .attr("y", yPos + 70)
         .attr("height", 50)
         .attr("width", 70)
         .attr("opacity", 1)
@@ -469,6 +488,12 @@ function sortConf(svgContainer){
             d3.select(this).attr("opacity", 1)                  //change selection;
             d3.select("#buttonThree").attr("opacity", 0.5)      //change highlight color of our buttons
             d3.select("#buttonFour").attr("opacity", 0.5)
+
+            //clear the buttons if this is click
+            svgContainer.selectAll("#buttons")
+                .style("opacity", 1)
+                filter = [];
+
             //FIRST remake the axis to fit the eastern teams
             svgContainer.selectAll("circle")
                 .data(_data)
@@ -500,8 +525,8 @@ function sortConf(svgContainer){
         })
     svgContainer.append("text")                                                                    //text that labels our buttons
         .attr("class", "buttonLabel")
-        .attr("x", xPos + 20)
-        .attr("y", yPos + 50)
+        .attr("x", xPos + 25)
+        .attr("y", yPos + 100)
         .text("All");
 }
 
@@ -525,8 +550,9 @@ function createLegend(svgContainer) {
         .attr("cy", function (d) {
             return y +=75;
         })
-        .attr("opacity", 0.6)
-        .style("fill", "#44c4eb");
+        .attr("opacity", 1)
+        .style("stroke", "black")
+        .style("fill", "#40c985");
     y = 400
     svgContainer.selectAll("legendText")
         .data(averagePoints)
@@ -540,7 +566,7 @@ function createLegend(svgContainer) {
             return y+=77;
         })
         .text(function (d) {
-            return d + " Avg Points"
+            return "= " + d + " Avg Points"
         })
 }
 
@@ -568,8 +594,8 @@ function createRadioButtons(svgContainer) {
         .attr("y", 1880)
         .attr("height", 50)
         .attr("width", 70)
-        .attr("opacity", 1)
-        .style("fill", "#73a9de")
+        .attr("opacity", 0.5)
+        .style("fill", "#aeaeae")
         .on("mouseover", function () {
             d3.select(this).style("stroke-width", 4).style("stroke", "black")
         })
@@ -577,72 +603,100 @@ function createRadioButtons(svgContainer) {
             d3.select(this).style("stroke", "none");
         })
         .on("click", function (d) {
-            //temp variable to get rid of " " in teamId1 so we can compute the difference between temp and filtersole.log(temp)
 
-            //want to remove all duplicates just in case of user error
-            filter = [...new Set(filter)];
-            filter.sort();
-            filter.push("")
+            if(filter.length != 0) {
+                //temp variable to get rid of " " in teamId1 so we can compute the difference between temp and filtersole.log(temp)
 
-            tempList = temp.filter(x => !filter.includes(x));
+                //want to remove all duplicates just in case of user error
+                filter = [...new Set(filter)];
+                filter.sort();
+                filter.push("")
 
-            var calcAxisRange = (70 * filter.length)
-            var calcAxisMove = (70 * tempList.length)
-            //from those two list i will construct a new axis
-            var yScaleFilter = d3.scalePoint()
-                .domain(filter)
-                .range([0, calcAxisRange]);
+                tempList = temp.filter(x => !filter.includes(x));
 
-
-            //select all circles
-            svgContainer.selectAll("circle")
-                .data(_data)
-                .transition()
-                .duration(1300)
-                .attr("cx", function (d) {
-                    var xScaleFT = d3.scaleLinear()
-                        .domain([0,140])
-                        .range([0, 1200]);
-                    if(flag == true ) {
-                        return xScale(d.ThreePointPercentage) + rightXPad;                      //if the flag is set to true it means we are moving based on three point percentage
-                    }
-                    else{
-                        return xScaleFT(d.FreeThrowPercentage) + rightXPad;                     //else free throw percentage
-                    }
-                })
-                .attr("cy", function (d) {
-                    if(filter.includes(d.Team)){
-                        return yScaleFilter(d.Team) + (yPad + calcAxisMove - 70);                                  //now scale the eastern conf team
-                    }
-                    if(tempList.includes(d.Team)){                                             //hide all the western conf teams
-                        return -4000;
-                    }
-                });
-
-            var parent = document.getElementById("vis")                                 //we remove the axis to update it
-            var child = parent.getElementsByClassName("yAxis")[0];
-            parent.removeChild(child);
-            var newYAxis = d3.axisLeft(yScaleFilter);                                             //here we append the new y axis
-
-            svgContainer.append("g")
-                .attr("class", "yAxis")
-                .attr("id", "Team-Axis")
-                .attr("transform", "translate(" + rightXPad + "," + (calcAxisMove + 30) + ")")
-                .call(newYAxis);
-            filter.pop()    //remove the " " element so our y axis doesnt start on x axis
+                var calcAxisRange = (70 * filter.length)
+                var calcAxisMove = (70 * tempList.length)
+                //from those two list i will construct a new axis
+                var yScaleFilter = d3.scalePoint()
+                    .domain(filter)
+                    .range([0, calcAxisRange]);
 
 
+                //select all circles
+                svgContainer.selectAll("circle")
+                    .data(_data)
+                    .transition()
+                    .duration(1300)
+                    .attr("cx", function (d) {
+                        var xScaleFT = d3.scaleLinear()
+                            .domain([0, 140])
+                            .range([0, 1200]);
+                        if (flag == true) {
+                            return xScale(d.ThreePointPercentage) + rightXPad;                      //if the flag is set to true it means we are moving based on three point percentage
+                        } else {
+                            return xScaleFT(d.FreeThrowPercentage) + rightXPad;                     //else free throw percentage
+                        }
+                    })
+                    .attr("cy", function (d) {
+                        if (filter.includes(d.Team)) {
+                            return yScaleFilter(d.Team) + (yPad + calcAxisMove - 70);                                  //now scale the eastern conf team
+                        }
+                        if (tempList.includes(d.Team)) {                                             //hide all the western conf teams
+                            return -4000;
+                        }
+                    });
+
+                var parent = document.getElementById("vis")                                 //we remove the axis to update it
+                var child = parent.getElementsByClassName("yAxis")[0];
+                parent.removeChild(child);
+                var newYAxis = d3.axisLeft(yScaleFilter);                                             //here we append the new y axis
+
+                svgContainer.append("g")
+                    .attr("class", "yAxis")
+                    .attr("id", "Team-Axis")
+                    .attr("transform", "translate(" + rightXPad + "," + (calcAxisMove + 30) + ")")
+                    .call(newYAxis);
+                filter.pop()    //remove the " " element so our y axis doesnt start on x axis
+
+            }
 
         })
     svgContainer.append("text")                                                                    //text that labels our buttons
         .attr("class", "buttonLabel")
-        .attr("x", xPos + 15)
+        .attr("x", xPos + 12)
         .attr("y", 1912)
         .text("Select");
+//-------------------------------------------------------------------
+//create a radio button to confirm clear selection of the filtered teams
+    svgContainer.append("rect")
+        .data(_data)
+        .attr("id", "buttonSeven")
+        .attr("rx", 11)
+        .attr("ry", 11)
+        .attr("x", xPos + 120)
+        .attr("y", 1880)
+        .attr("height", 50)
+        .attr("width", 70)
+        .attr("opacity", 0.5)
+        .style("fill", "#aeaeae")
+        .on("mouseover", function () {
+            d3.select(this).style("stroke-width", 4).style("stroke", "black")
+        })
+        .on("mouseout", function () {
+            d3.select(this).style("stroke", "none");
+        })
+        .on("click", function (d) {
+            svgContainer.selectAll("#buttons")
+                .style("opacity", 1)
+            filter = [];
 
+        })
 
-
-
+    svgContainer.append("text")                                                                    //text that labels our buttons
+        .attr("class", "buttonLabel")
+        .attr("x", xPos + 136)
+        .attr("y", 1912)
+        .text("Clear");
 }
 
 
@@ -660,6 +714,7 @@ function  drawButtons(svgContainer, leftStackButtons, middleStackButtons, rightS
             .data(listOfButtons[i])
             .enter()
             .append("circle")
+            .attr("id", "buttons")
             .attr("class", function (d) {
                 return d;
             })
@@ -689,4 +744,62 @@ function  drawButtons(svgContainer, leftStackButtons, middleStackButtons, rightS
     }
 
 
+}
+
+function createLegendBorder(svgContainer) {
+
+    //draw a border around our radio buttons
+    svgContainer.append("g")
+        .append("rect")
+        .attr("rx", 10)
+        .attr("ry", 10)
+        .attr("x", xPos - 15)
+        .attr("y", yPos - 900)
+        .attr("width", 220)
+        .attr("height", 790)
+        .style("opacity", 1)
+        .attr("stroke", "black")
+        .attr("stroke-width", "3px")
+        .attr("fill", "white");
+
+    //draw a border around our bubble size legend
+    svgContainer.append("g")
+        .append("rect")
+        .attr("rx", 10)
+        .attr("ry", 10)
+        .attr("x", xPos - 25)
+        .attr("y", yPos - 1690)
+        .attr("width", 300)
+        .attr("height", 300)
+        .style("opacity", 1)
+        .attr("fill", "black")
+        .attr("fill", "#bac5d6");
+
+    //add a title to the legend
+    svgContainer.append("g")
+        .append("text")
+        .attr("x", xPos + 45)
+        .attr("y", yPos - 1650)
+        .attr("font-size", 30)
+        .attr("font", "sans-serif")
+        .text("Bubble Size")
+
+    //add a text for the interactions
+    svgContainer.append("g")
+        .append("text")
+        .attr("x", xPos - 40)
+        .attr("y", yPos - 920)
+        .attr("font-size", 30)
+        .attr("font", "sans-serif")
+        .text("Filter by Specfic Team")
+
+
+    //add a text for the interactions
+    svgContainer.append("g")
+        .append("text")
+        .attr("x", xPos)
+        .attr("y", yPos - 40)
+        .attr("font-size", 30)
+        .attr("font", "sans-serif")
+        .text("Organize by")
 }
