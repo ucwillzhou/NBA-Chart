@@ -7,7 +7,7 @@ window.onload = function(){
 };
 //define global variables
 var _data;
-var WIDTH = 1850;
+var WIDTH = 1900;
 var HEIGHT = 2300;
 var flag = true;
 var rightXPad = 295;
@@ -796,10 +796,45 @@ function createLegendBorder(svgContainer) {
 
     //add a text for the interactions
     svgContainer.append("g")
+        .attr("class", "description")
         .append("text")
         .attr("x", xPos)
         .attr("y", yPos - 40)
-        .attr("font-size", 30)
-        .attr("font", "sans-serif")
         .text("Organize by")
+
+
+    svgContainer.append("g")
+        .attr("class", "description")
+        .append("text")
+        .attr("x", xPos - 30)
+        .attr("y", 100)
+        .text("Comparison between Team's shooting")
+
+    svgContainer.append("g")
+        .attr("class", "description")
+        .append("text")
+        .attr("x", xPos - 30)
+        .attr("y", 125)
+        .text("percentages, the players average points")
+
+    svgContainer.append("g")
+        .attr("class", "description")
+        .append("text")
+        .attr("x", xPos - 30)
+        .attr("y", 150)
+        .text("are represented by size of circle.")
+
+    svgContainer.append("g")
+        .attr("class", "description")
+        .append("text")
+        .attr("x", xPos - 30)
+        .attr("y", 175)
+        .text("Teams can be organized by western or")
+
+    svgContainer.append("g")
+        .attr("class", "description")
+        .append("text")
+        .attr("x", xPos - 30)
+        .attr("y", 200)
+        .text("eastern conference or by specific teams")
 }
