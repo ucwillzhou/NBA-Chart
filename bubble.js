@@ -7,7 +7,7 @@ window.onload = function(){
 };
 //define global variables
 var _data;
-var WIDTH = 1900;
+var WIDTH = 1940;
 var HEIGHT = 2300;
 var flag = true;
 var rightXPad = 295;
@@ -85,8 +85,8 @@ function bubbleChart(){
     //title label
     svgContainer.append("text")
         .attr("class", "xLabel")
-        .text("NBA Teams and Their Shooting Percentages (3PT/FT)")
-        .attr("x", 750)
+        .text("NBA Teams and Their Shooting Percentages (3PT/FT) 2018-2019")
+        .attr("x", 500)
         .attr("y", 50);
 
     svgContainer.append("text")
@@ -791,7 +791,7 @@ function createLegendBorder(svgContainer) {
         .attr("y", yPos - 920)
         .attr("font-size", 30)
         .attr("font", "sans-serif")
-        .text("Filter by Specfic Team")
+        .text("Filter by Specific Team")
 
 
     //add a text for the interactions
@@ -808,21 +808,21 @@ function createLegendBorder(svgContainer) {
         .append("text")
         .attr("x", xPos - 30)
         .attr("y", 175)
-        .text("Comparison between Team's shooting")
+        .text("Comparison between players shooting")
 
     svgContainer.append("g")
         .attr("class", "description")
         .append("text")
         .attr("x", xPos - 30)
         .attr("y", 200)
-        .text("percentages, the players average points")
+        .text("percentages on their team, the players average")
 
     svgContainer.append("g")
         .attr("class", "description")
         .append("text")
         .attr("x", xPos - 30)
         .attr("y", 225)
-        .text("are represented by size of circle.")
+        .text("points are represented by size of circle.")
 
     svgContainer.append("g")
         .attr("class", "description")
