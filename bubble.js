@@ -12,7 +12,7 @@ var HEIGHT = 2300;
 var flag = true;
 var rightXPad = 295;
 var yPad = 100;
-var xPos = 1510;
+var xPos = 1550;
 var yPos = 2060;
 var tempList = [];
 //image.png
@@ -187,8 +187,8 @@ function bubbleChart(){
                     return xScaleFT(d.FreeThrowPercentage) + rightXPad;
                 })
             var xScaleFT = d3.scaleLinear()
-                .domain([0,90])
-                .range([0, 1100]);
+                .domain([0,100])
+                .range([0, 1200]);
 
             var parent = document.getElementById("vis")
             var child = parent.getElementsByClassName("xAxis")[0];
@@ -798,7 +798,7 @@ function createLegendBorder(svgContainer) {
     svgContainer.append("g")
         .attr("class", "description")
         .append("text")
-        .attr("x", xPos)
+        .attr("x", xPos - 10)
         .attr("y", yPos - 40)
         .text("Organize by")
 
