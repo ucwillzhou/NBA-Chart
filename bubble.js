@@ -85,7 +85,7 @@ function bubbleChart(){
     //title label
     svgContainer.append("text")
         .attr("class", "xLabel")
-        .text("NBA Teams and Their Shooting Percentages (3PT/FT) 2018-2019")
+        .text("NBA Teams and Their Player's Shooting Percentages (3PT/FT) 2018-2019 Season")
         .attr("x", 500)
         .attr("y", 50);
 
