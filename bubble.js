@@ -7,7 +7,7 @@ window.onload = function(){
 };
 //define global variables
 var _data;
-var WIDTH = 1940;
+var WIDTH = 2010;
 var HEIGHT = 2300;
 var flag = true;
 var rightXPad = 295;
@@ -815,7 +815,7 @@ function createLegendBorder(svgContainer) {
         .append("text")
         .attr("x", xPos - 30)
         .attr("y", 200)
-        .text("percentages on their team, the players average")
+        .text("percentages on their team, the players avg")
 
     svgContainer.append("g")
         .attr("class", "description")
